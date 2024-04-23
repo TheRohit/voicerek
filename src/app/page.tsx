@@ -6,7 +6,7 @@ import ResponseScreen from "~/components/Home/ResponseScreen";
 
 export default function HomePage() {
   const [response, setResponse] = useState(
-    "Hi there! Thanks for calling! How can I brighten your day today?",
+    "Hi there! I'd love to help you with anything you need. What's on your mind today?",
   );
 
   return (
