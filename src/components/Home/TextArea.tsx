@@ -20,7 +20,6 @@ const TextArea = ({
   return (
     <div className="flex gap-2">
       <Input
-        className="text-white"
         placeholder="What's in your mind?"
         value={message}
         onChange={(e) => {

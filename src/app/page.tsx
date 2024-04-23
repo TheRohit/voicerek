@@ -5,6 +5,7 @@ import { useState } from "react";
 import TextArea from "~/components/Home/TextArea";
 import axios from "axios";
 import { playAudio } from "~/utils/utils";
+import ResponseScreen from "~/components/Home/ResponseScreen";
 
 export default function HomePage() {
   const [message, setMessage] = useState<string>("");
@@ -13,6 +14,7 @@ export default function HomePage() {
   const { mutate: sendMessage, isPending } = useMutation({
     mutationFn: async () => {
       const { data } = await axios.post("/api/askgroq", { message });
+      setMessage("");
       return data as string;
     },
 
@@ -46,8 +48,8 @@ export default function HomePage() {
   });
 
   return (
-    <main className="flex h-full flex-col items-center justify-end gap-5 p-10 text-white">
-      {response}
+    <main className="flex h-full w-full flex-col items-center justify-between gap-5 p-10 text-black">
+      <ResponseScreen response={response} />
       <TextArea
         setMessage={setMessage}
         handleSend={sendMessage}
