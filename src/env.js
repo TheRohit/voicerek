@@ -12,6 +12,7 @@ export const env = createEnv({
       .enum(["development", "test", "production"])
       .default("development"),
     GROQ_API_KEY: z.string(),
+    DEEPGRAM_API_KEY: z.string(),
   },
 
   /**
@@ -31,6 +32,7 @@ export const env = createEnv({
     POSTGRES_URL: process.env.POSTGRES_URL,
     NODE_ENV: process.env.NODE_ENV,
     GROQ_API_KEY: process.env.GROQ_API_KEY,
+    DEEPGRAM_API_KEY: process.env.DEEPGRAM_API_KEY,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
