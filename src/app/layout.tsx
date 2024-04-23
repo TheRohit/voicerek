@@ -13,6 +13,14 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
+const TopNav = () => {
+  return (
+    <nav className="flex w-full items-center justify-between border-b p-4 text-xl font-semibold ">
+      <div>VoiceRek</div>
+    </nav>
+  );
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -21,7 +29,12 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={`font-sans ${inter.variable}`}>{children}</body>
+        <body className={`font-sans ${inter.variable} `}>
+          <div className="grid h-screen grid-rows-[auto,1fr]">
+            <TopNav />
+            <main className="overflow-y-scroll">{children}</main>
+          </div>
+        </body>
       </html>
     </ClerkProvider>
   );
