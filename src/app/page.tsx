@@ -46,7 +46,7 @@ export default function HomePage() {
   });
 
   return (
-    <main className="flex h-full flex-col items-center justify-end p-10  text-white">
+    <main className="flex h-full flex-col items-center justify-end gap-5 p-10 text-white">
       {response}
       <TextArea
         setMessage={setMessage}
