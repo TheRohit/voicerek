@@ -28,7 +28,7 @@ export async function GET(request: Request) {
       comment: "Temporary API key",
       scopes: ["usage:write"],
       tags: ["next.js"],
-      time_to_live_in_seconds: 1800,
+      time_to_live_in_seconds: 600,
     });
 
   if (newKeyError) {
