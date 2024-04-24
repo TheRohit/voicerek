@@ -55,6 +55,7 @@ export function useDeepgramSpeechToText(): UseDeepgramTextToSpeechReturn {
       listenClient.on(LiveTranscriptionEvents.Close, () => {
         console.log("connection closed");
         setIsListening(false);
+        setApiKey(null);
         setConnection(null);
       });
 
@@ -73,10 +74,6 @@ export function useDeepgramSpeechToText(): UseDeepgramTextToSpeechReturn {
 
       setConnection(listenClient);
       setIsLoading(false);
-
-      return () => {
-        listenClient.removeAllListeners();
-      };
     }
   }, [apiKey]);
 
