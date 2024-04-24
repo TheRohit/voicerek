@@ -6,9 +6,7 @@ interface RequestData {
 }
 export async function POST(req: NextRequest) {
   const { text }: RequestData = await req.json();
-  const { stream, headers } = await useDeepgramSpeech(text);
-  if (headers) {
-    console.log("Headers:", headers);
-  }
+  const { stream } = await useDeepgramSpeech(text);
+
   return new NextResponse(stream, { status: 200 });
 }
