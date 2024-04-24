@@ -13,6 +13,8 @@ export const env = createEnv({
       .default("development"),
     GROQ_API_KEY: z.string(),
     DEEPGRAM_API_KEY: z.string(),
+    REDIS_URL: z.string(),
+    REDIS_SECRET: z.string(),
   },
 
   /**
@@ -33,6 +35,8 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     GROQ_API_KEY: process.env.GROQ_API_KEY,
     DEEPGRAM_API_KEY: process.env.DEEPGRAM_API_KEY,
+    REDIS_URL: process.env.REDIS_URL,
+    REDIS_SECRET: process.env.REDIS_SECRET,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

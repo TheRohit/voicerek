@@ -6,8 +6,8 @@ import { env } from "../env.js";
 import { Redis } from "@upstash/redis";
 
 const client = new Redis({
-  url: process.env.REDIS_URL!,
-  token: process.env.REDIS_SECRET!,
+  url: env.REDIS_URL,
+  token: env.REDIS_SECRET,
 });
 
 const memory = new BufferMemory({
