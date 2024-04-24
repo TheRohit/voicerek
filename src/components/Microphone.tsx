@@ -1,8 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { useQueue } from "@uidotdev/usehooks";
+import { LiveClient } from "@deepgram/sdk";
 
-export const Microphone = ({ isListening, connection }) => {
+interface MicrophoneProps {
+  isListening: boolean;
+  connection: LiveClient | null;
+}
+
+export const Microphone = ({ isListening, connection }: MicrophoneProps) => {
   const [microphone, setMicrophone] = useState<MediaRecorder | null>();
   const [userMedia, setUserMedia] = useState<MediaStream | null>();
   const [micOpen, setMicOpen] = useState(false);
@@ -46,7 +52,7 @@ export const Microphone = ({ isListening, connection }) => {
 
       if (isListening) {
         const blob = first;
-        connection?.send(blob);
+        connection?.send(blob as Blob);
         remove();
       }
 
