@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   createClient,
+  CreateProjectKeyResponse,
   LiveClient,
   LiveTranscriptionEvent,
   LiveTranscriptionEvents,
@@ -18,46 +19,66 @@ export function useDeepgramSpeechToText(): UseDeepgramTextToSpeechReturn {
   const [connection, setConnection] = useState<LiveClient | null>(null);
   const [caption, setCaption] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [apiKey, setApiKey] = useState<CreateProjectKeyResponse | null>();
 
   useEffect(() => {
-    const deepgram = createClient(process.env.DEEPGRAM_API_KEY!);
-    const listenClient: LiveClient = deepgram.listen.live({
-      model: "nova",
-      interim_results: true,
-      smart_format: true,
-    });
+    if (!apiKey) {
+      console.log("getting a new api key");
+      fetch("/api/transcribe", { cache: "no-store" })
+        .then((res) => res.json())
+        .then((object) => {
+          if (!("key" in object)) throw new Error("No api key returned");
 
-    listenClient.on(LiveTranscriptionEvents.Open, () => {
-      console.log("connection established");
-      setIsListening(true);
-    });
+          setApiKey(object as CreateProjectKeyResponse);
+        })
+        .catch((e) => {
+          console.error(e);
+        });
+    }
+  }, [apiKey]);
 
-    listenClient.on(LiveTranscriptionEvents.Close, () => {
-      console.log("connection closed");
-      setIsListening(false);
-      setConnection(null);
-    });
+  useEffect(() => {
+    if (apiKey && "key" in apiKey) {
+      console.log("connecting to deepgram");
+      const deepgram = createClient(apiKey.key ?? "");
+      const listenClient: LiveClient = deepgram.listen.live({
+        model: "nova",
+        interim_results: true,
+        smart_format: true,
+      });
 
-    listenClient.on(
-      LiveTranscriptionEvents.Transcript,
-      (data: LiveTranscriptionEvent) => {
-        const words = data?.channel?.alternatives[0]?.words ?? [];
-        const newCaption = words
-          .map((word) => word.punctuated_word ?? word.word)
-          .join(" ");
-        if (newCaption !== "") {
-          setCaption(newCaption);
-        }
-      },
-    );
+      listenClient.on(LiveTranscriptionEvents.Open, () => {
+        console.log("connection established");
+        setIsListening(true);
+      });
 
-    setConnection(listenClient);
-    setIsLoading(false);
+      listenClient.on(LiveTranscriptionEvents.Close, () => {
+        console.log("connection closed");
+        setIsListening(false);
+        setConnection(null);
+      });
 
-    return () => {
-      listenClient.removeAllListeners();
-    };
-  }, []);
+      listenClient.on(
+        LiveTranscriptionEvents.Transcript,
+        (data: LiveTranscriptionEvent) => {
+          const words = data?.channel?.alternatives[0]?.words ?? [];
+          const newCaption = words
+            .map((word) => word.punctuated_word ?? word.word)
+            .join(" ");
+          if (newCaption !== "") {
+            setCaption(newCaption);
+          }
+        },
+      );
+
+      setConnection(listenClient);
+      setIsLoading(false);
+
+      return () => {
+        listenClient.removeAllListeners();
+      };
+    }
+  }, [apiKey]);
 
   return { isListening, caption, isLoading, connection };
 }
