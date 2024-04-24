@@ -1,7 +1,7 @@
 import { createClient } from "@deepgram/sdk";
 import { env } from "../env.js";
 
-export async function useDeepgramSpeech(text: string) {
+export async function useDeepgramVoice(text: string) {
   const deepgram = createClient(env.DEEPGRAM_API_KEY);
 
   const speechResponse = await deepgram.speak.request(
