@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import { useEffect, useState } from "react";
 import {
   createClient,
@@ -15,11 +16,12 @@ interface UseDeepgramTextToSpeechReturn {
 }
 
 export function useDeepgramSpeechToText(): UseDeepgramTextToSpeechReturn {
-  const [isListening, setIsListening] = useState<boolean>(false);
   const [connection, setConnection] = useState<LiveClient | null>(null);
   const [caption, setCaption] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [apiKey, setApiKey] = useState<CreateProjectKeyResponse | null>();
+  const [isLoadingKey, setIsLoadingKey] = useState(true);
+  const [isListening, setIsListening] = useState<boolean>(false);
 
   useEffect(() => {
     if (!apiKey) {
@@ -28,8 +30,8 @@ export function useDeepgramSpeechToText(): UseDeepgramTextToSpeechReturn {
         .then((res) => res.json())
         .then((object) => {
           if (!("key" in object)) throw new Error("No api key returned");
-
           setApiKey(object as CreateProjectKeyResponse);
+          setIsLoadingKey(false);
         })
         .catch((e) => {
           console.error(e);
@@ -38,14 +40,22 @@ export function useDeepgramSpeechToText(): UseDeepgramTextToSpeechReturn {
   }, [apiKey]);
 
   useEffect(() => {
-    if (apiKey && "key" in apiKey) {
+    if (apiKey && "key" in apiKey && !isLoadingKey) {
       console.log("connecting to deepgram");
-      const deepgram = createClient(apiKey.key ?? "");
-      const listenClient: LiveClient = deepgram.listen.live({
+      const deepgram = createClient(apiKey?.key ?? "");
+      let listenClient: LiveClient;
+      let keepAlive;
+
+      listenClient = deepgram.listen.live({
         model: "nova",
         interim_results: true,
         smart_format: true,
       });
+      if (keepAlive) clearInterval(keepAlive);
+      keepAlive = setInterval(() => {
+        console.log("KeepAlive sent.");
+        listenClient.keepAlive();
+      }, 3000);
 
       listenClient.on(LiveTranscriptionEvents.Open, () => {
         console.log("connection established");
@@ -57,6 +67,7 @@ export function useDeepgramSpeechToText(): UseDeepgramTextToSpeechReturn {
         setIsListening(false);
         setApiKey(null);
         setConnection(null);
+        clearInterval(keepAlive);
       });
 
       listenClient.on(
@@ -75,7 +86,6 @@ export function useDeepgramSpeechToText(): UseDeepgramTextToSpeechReturn {
       setConnection(listenClient);
       setIsLoading(false);
     }
-  }, [apiKey]);
-
+  }, [apiKey, isLoadingKey]);
   return { isListening, caption, isLoading, connection };
 }

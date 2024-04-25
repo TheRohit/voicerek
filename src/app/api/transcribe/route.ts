@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import { DeepgramError, createClient } from "@deepgram/sdk";
 import { NextResponse } from "next/server";
 import { env } from "~/env";
@@ -6,7 +7,7 @@ export async function GET(request: Request) {
   const url = request.url;
   const deepgram = createClient(env.DEEPGRAM_API_KEY);
 
-  const { result: projectsResult, error: projectsError } =
+  let { result: projectsResult, error: projectsError } =
     await deepgram.manage.getProjects();
 
   if (projectsError) {
@@ -23,12 +24,11 @@ export async function GET(request: Request) {
     );
   }
 
-  const { result: newKeyResult, error: newKeyError } =
+  let { result: newKeyResult, error: newKeyError } =
     await deepgram.manage.createProjectKey(project.project_id, {
-      comment: "Temporary API key",
+      comment: `apiKey-${Date.now()}`,
       scopes: ["usage:write"],
-      tags: ["next.js"],
-      time_to_live_in_seconds: 600,
+      time_to_live_in_seconds: 1800,
     });
 
   if (newKeyError) {
