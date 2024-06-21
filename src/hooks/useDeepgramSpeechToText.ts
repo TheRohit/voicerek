@@ -13,6 +13,7 @@ interface UseDeepgramTextToSpeechReturn {
   caption: string | null;
   isLoading: boolean;
   connection: LiveClient | null;
+  isFinal: boolean | undefined;
 }
 
 export function useDeepgramSpeechToText(): UseDeepgramTextToSpeechReturn {
@@ -22,6 +23,7 @@ export function useDeepgramSpeechToText(): UseDeepgramTextToSpeechReturn {
   const [apiKey, setApiKey] = useState<CreateProjectKeyResponse | null>();
   const [isLoadingKey, setIsLoadingKey] = useState(true);
   const [isListening, setIsListening] = useState<boolean>(false);
+  const [isFinal, setIsFinal] = useState<boolean | undefined>(false);
 
   useEffect(() => {
     if (!apiKey) {
@@ -78,6 +80,7 @@ export function useDeepgramSpeechToText(): UseDeepgramTextToSpeechReturn {
             .map((word) => word.punctuated_word ?? word.word)
             .join(" ");
           if (newCaption !== "") {
+            setIsFinal(data?.is_final);
             setCaption(newCaption);
           }
         },
@@ -87,5 +90,5 @@ export function useDeepgramSpeechToText(): UseDeepgramTextToSpeechReturn {
       setIsLoading(false);
     }
   }, [apiKey, isLoadingKey]);
-  return { isListening, caption, isLoading, connection };
+  return { isListening, caption, isLoading, connection, isFinal };
 }

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { useQueue } from "@uidotdev/usehooks";
 import { LiveClient } from "@deepgram/sdk";
+import { Mic } from "lucide-react";
 
 interface MicrophoneProps {
   isListening: boolean;

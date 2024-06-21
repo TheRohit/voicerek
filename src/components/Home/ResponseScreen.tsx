@@ -1,10 +1,11 @@
 import { Canvas } from "@react-three/fiber";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useDeepgramSpeechToText } from "~/hooks/useDeepgramSpeechToText";
+import { playAudio } from "~/utils/utils";
 import Blob from "../Blob";
 import TextArea from "./TextArea";
-import { useMutation } from "@tanstack/react-query";
-import { Dispatch, SetStateAction, useState } from "react";
-import axios from "axios";
-import { playAudio } from "~/utils/utils";
 
 interface ResponseScreenProps {
   response: string;
@@ -12,10 +13,14 @@ interface ResponseScreenProps {
 }
 
 const ResponseScreen = ({ response, setResponse }: ResponseScreenProps) => {
+  const { isListening, caption, connection, isFinal } =
+    useDeepgramSpeechToText();
   const [message, setMessage] = useState<string>("");
   const { mutate: sendMessage, isPending } = useMutation({
-    mutationFn: async () => {
-      const { data } = await axios.post("/api/askgroq", { message });
+    mutationFn: async (reqMessage: string) => {
+      const { data } = await axios.post("/api/askgroq", {
+        message: reqMessage,
+      });
       setMessage("");
       return data as string;
     },
@@ -49,6 +54,17 @@ const ResponseScreen = ({ response, setResponse }: ResponseScreenProps) => {
     },
   });
 
+  const handleInputReqSend = async () => {
+    sendMessage(message);
+  };
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    if (caption?.endsWith("?") || isFinal) {
+      sendMessage(caption ?? "");
+    }
+  }, [caption, isFinal, sendMessage]);
+
   return (
     <div className="flex w-full items-center justify-between rounded-lg  p-5">
       <div className=" h-[70vh] w-1/3">
@@ -60,11 +76,15 @@ const ResponseScreen = ({ response, setResponse }: ResponseScreenProps) => {
         {response ??
           "Hi there! Thanks for calling! How can I brighten your day today?"}
         <TextArea
+          isListening={isListening}
+          connection={connection}
           setMessage={setMessage}
-          handleSend={sendMessage}
+          handleSend={handleInputReqSend}
           message={message}
           isLoading={isPending}
         />
+
+        {caption}
       </div>
     </div>
   );

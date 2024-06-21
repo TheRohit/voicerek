@@ -1,15 +1,17 @@
-import { type Dispatch, type SetStateAction } from "react";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+import { LiveClient } from "@deepgram/sdk";
 import { Loader2 } from "lucide-react";
+import { type Dispatch, type SetStateAction } from "react";
 import { Microphone } from "../Microphone";
-import { useDeepgramSpeechToText } from "~/hooks/useDeepgramSpeechToText";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 
 interface TextAreaProps {
   setMessage: Dispatch<SetStateAction<string>>;
   message: string;
   handleSend: () => void;
   isLoading: boolean;
+  isListening: boolean;
+  connection: LiveClient | null;
 }
 
 const TextArea = ({
@@ -17,9 +19,10 @@ const TextArea = ({
   message,
   handleSend,
   isLoading,
+  isListening,
+  connection,
 }: TextAreaProps) => {
   const isDisabled = message === "" || isLoading;
-  const { isListening, caption, connection } = useDeepgramSpeechToText();
 
   return (
     <div className="flex gap-2">
@@ -36,7 +39,6 @@ const TextArea = ({
         Send
       </Button>
       <Microphone isListening={isListening} connection={connection} />
-      {caption}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import "~/styles/globals.css";
 
 import { Inter } from "next/font/google";
 import Providers from "~/components/Providers";
+import RetroGrid from "~/components/retro-grid";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,6 +32,8 @@ export default function RootLayout({
     <html lang="en">
       <Providers>
         <body className={`font-sans ${inter.variable}`}>
+          <RetroGrid />
+          {/* <Meteors number={30} /> */}
           <div className="grid h-screen grid-rows-[auto,1fr]">
             <TopNav />
             <main className="overflow-y-scroll">{children}</main>
